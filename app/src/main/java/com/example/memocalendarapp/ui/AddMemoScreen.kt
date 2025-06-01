@@ -4,10 +4,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.memocalendarapp.data.Memo
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.memocalendarapp.util.NotificationUtil
 
 @Composable
 fun AddMemoScreen(
@@ -15,6 +15,8 @@ fun AddMemoScreen(
     onSave: (Memo) -> Unit,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
+
     var time by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
@@ -54,15 +56,15 @@ fun AddMemoScreen(
                     if (title.isBlank() || !time.matches(Regex("\\d{2}:\\d{2}"))) {
                         showError = true
                     } else {
-                        onSave(
-                            Memo(
-                                date = today,
-                                time = time,
-                                location = location,
-                                title = title,
-                                description = description
-                            )
+                        val memo = Memo(
+                            date = today,
+                            time = time,
+                            location = location,
+                            title = title,
+                            description = description
                         )
+                        onSave(memo)
+                        NotificationUtil.scheduleMemoReminder(context, memo) // 新增提醒
                         onBack()
                     }
                 }

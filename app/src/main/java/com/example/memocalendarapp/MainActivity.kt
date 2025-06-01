@@ -1,12 +1,16 @@
 package com.example.memocalendarapp
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.memocalendarapp.data.MemoDatabase
 import com.example.memocalendarapp.viewmodel.MemoViewModel
@@ -17,6 +21,33 @@ import com.example.memocalendarapp.ui.AddMemoScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ===== 建立通知頻道 =====
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = android.app.NotificationChannel(
+                "memo_reminder",
+                "備忘提醒",
+                android.app.NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = getSystemService(android.app.NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
+
+        // ===== Android 13+ 動態請求通知權限 =====
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1001
+                )
+            }
+        }
+
         val db = MemoDatabase.getDatabase(this)
         val factory = MemoViewModelFactory(db.memoDao())
 
@@ -25,7 +56,6 @@ class MainActivity : ComponentActivity() {
             val viewModel: MemoViewModel = viewModel(factory = factory)
             var currentScreen by remember { mutableStateOf("main") }
 
-            // 注意：此區塊只能呼叫 Composable function
             when (currentScreen) {
                 "main" -> MainScreen(
                     viewModel = viewModel,
