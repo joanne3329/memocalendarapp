@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.memocalendarapp.data.Memo
+import androidx.compose.foundation.shape.RoundedCornerShape
+
 
 @Composable
 fun MemoItem(
@@ -20,21 +22,46 @@ fun MemoItem(
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             Modifier
-                .padding(8.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // 時間：大字、加粗
+            Text(
+                text = memo.time,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(end = 12.dp)
+            )
             Column(Modifier.weight(1f)) {
-                Text("時間：${memo.time}")
-                Text("標題：${memo.title}")
-                Text("說明：${memo.description}")
+                // 標題：加粗
+                Text(
+                    memo.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1
+                )
+                // 說明
+                if (memo.description.isNotBlank()) {
+                    Text(
+                        memo.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                        maxLines = 2
+                    )
+                }
+                // 地點：深色
                 if (memo.location.isNotBlank()) {
                     Text(
                         "地點：${memo.location}",
-                        color = MaterialTheme.colorScheme.primary, // <<<<<<< Material3
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.clickable { onOpenLocation() }
                     )
                 }

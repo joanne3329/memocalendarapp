@@ -7,7 +7,11 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -17,6 +21,7 @@ import com.example.memocalendarapp.viewmodel.MemoViewModel
 import com.example.memocalendarapp.viewmodel.MemoViewModelFactory
 import com.example.memocalendarapp.ui.MainScreen
 import com.example.memocalendarapp.ui.AddMemoScreen
+import com.example.memocalendarapp.ui.theme.MemoAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,29 +57,37 @@ class MainActivity : ComponentActivity() {
         val factory = MemoViewModelFactory(db.memoDao())
 
         setContent {
-            val context = LocalContext.current
-            val viewModel: MemoViewModel = viewModel(factory = factory)
-            var currentScreen by remember { mutableStateOf("main") }
+            MemoAppTheme { // 藍色主題
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding() // 不被相機孔壓到
+                ) {
+                    val context = LocalContext.current
+                    val viewModel: MemoViewModel = viewModel(factory = factory)
+                    var currentScreen by remember { mutableStateOf("main") }
 
-            when (currentScreen) {
-                "main" -> MainScreen(
-                    viewModel = viewModel,
-                    onAddMemo = { currentScreen = "add" },
-                    onOpenLocation = { location ->
-                        val uri = Uri.parse("geo:0,0?q=${Uri.encode(location)}")
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        intent.setPackage("com.google.android.apps.maps")
-                        context.startActivity(intent)
+                    when (currentScreen) {
+                        "main" -> MainScreen(
+                            viewModel = viewModel,
+                            onAddMemo = { currentScreen = "add" },
+                            onOpenLocation = { location ->
+                                val uri = Uri.parse("geo:0,0?q=${Uri.encode(location)}")
+                                val intent = Intent(Intent.ACTION_VIEW, uri)
+                                intent.setPackage("com.google.android.apps.maps")
+                                context.startActivity(intent)
+                            }
+                        )
+                        "add" -> AddMemoScreen(
+                            today = viewModel.getToday(),
+                            onSave = {
+                                viewModel.insertMemo(it)
+                                currentScreen = "main"
+                            },
+                            onBack = { currentScreen = "main" }
+                        )
                     }
-                )
-                "add" -> AddMemoScreen(
-                    today = viewModel.getToday(),
-                    onSave = {
-                        viewModel.insertMemo(it)
-                        currentScreen = "main"
-                    },
-                    onBack = { currentScreen = "main" }
-                )
+                }
             }
         }
     }

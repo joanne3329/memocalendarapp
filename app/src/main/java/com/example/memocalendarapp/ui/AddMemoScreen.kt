@@ -4,13 +4,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.Alignment
 import com.example.memocalendarapp.data.Memo
 import com.example.memocalendarapp.util.NotificationUtil
+import androidx.compose.ui.unit.dp
+
+// 深藍、日期色
+val DeepBlue = Color(0xFF1F5673)
+val DateGreyBlue = Color(0xFF6C7A89)
 
 fun isValidTime24(time: String): Boolean {
-    // 正則可過 00:00 ~ 23:59
     val regex = Regex("^(?:[01]\\d|2[0-3]):[0-5]\\d$")
     return regex.matches(time)
 }
@@ -22,6 +30,7 @@ fun AddMemoScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     var time by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
@@ -30,8 +39,28 @@ fun AddMemoScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf("") }
 
-    Column(Modifier.padding(16.dp)) {
-        Text("新增今日備忘錄（$today）", style = MaterialTheme.typography.titleLarge)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .padding(16.dp)
+    ) {
+        // 主標題＋日期
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "新增今日備忘錄",
+                style = MaterialTheme.typography.titleLarge,
+                color = DeepBlue
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                "（$today）",
+                style = MaterialTheme.typography.bodyLarge,
+                color = DateGreyBlue
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        // 時間
         OutlinedTextField(
             value = time,
             onValueChange = {
@@ -44,33 +73,41 @@ fun AddMemoScreen(
                 }
             },
             label = { Text("時間 (00:00~23:59)") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
             supportingText = {
                 if (showError) {
                     Text(errorMsg, color = MaterialTheme.colorScheme.error)
                 }
             }
         )
+        // 地點
         OutlinedTextField(
             value = location,
             onValueChange = { location = it },
             label = { Text("地點") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            singleLine = true
         )
+        // 標題
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
             label = { Text("標題") },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            singleLine = true
         )
+        // 說明
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
             label = { Text("說明") },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         )
-        Row(Modifier.padding(top = 12.dp)) {
+        Row(Modifier.padding(top = 16.dp)) {
             Button(
                 onClick = {
                     try {
@@ -94,17 +131,28 @@ fun AddMemoScreen(
                         )
                         onSave(memo)
                         NotificationUtil.scheduleMemoReminder(context, memo)
+                        focusManager.clearFocus()
                         onBack()
                     } catch (e: Exception) {
                         showError = true
                         errorMsg = "發生錯誤：${e.message}"
-                        // 你可以用 Log.e 印出錯誤
                         e.printStackTrace()
                     }
-                }
-            ) { Text("儲存") }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = DeepBlue // 儲存按鈕底色深藍
+                )
+            ) { Text("儲存", color = Color.White) }
             Spacer(Modifier.width(16.dp))
-            OutlinedButton(onClick = onBack) { Text("取消") }
+            OutlinedButton(
+                onClick = {
+                    focusManager.clearFocus()
+                    onBack()
+                },
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = DeepBlue // 取消按鈕文字顏色深藍
+                )
+            ) { Text("取消") }
         }
     }
 }
