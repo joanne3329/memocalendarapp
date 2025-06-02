@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.memocalendarapp.data.Memo
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
 
 
 @Composable
@@ -19,48 +20,53 @@ fun MemoItem(
     onDelete: () -> Unit,
     onOpenLocation: () -> Unit
 ) {
+    // 主卡片底色、字體顏色
+    val cardColor = Color(0xFFD1CFE2) // 柔和紫
+    val timeColor = Color(0xFF1F5673) // 深藍
+    val titleColor = Color.Black
+    val descriptionColor = Color(0xFF333333) // 深灰
+    val locationColor = Color(0xFF1F5673)    // 深藍
+
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
-            Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            Modifier.padding(18.dp),
+            verticalAlignment = Alignment.Top
         ) {
-            // 時間：大字、加粗
+            // 時間
             Text(
                 text = memo.time,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(end = 12.dp)
+                style = MaterialTheme.typography.headlineMedium,
+                color = timeColor,
+                modifier = Modifier.padding(end = 16.dp)
             )
             Column(Modifier.weight(1f)) {
-                // 標題：加粗
+                // 標題
                 Text(
                     memo.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1
+                    style = MaterialTheme.typography.titleLarge,
+                    color = titleColor
                 )
                 // 說明
                 if (memo.description.isNotBlank()) {
                     Text(
                         memo.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                        color = descriptionColor,
                         maxLines = 2
                     )
                 }
-                // 地點：深色
+                // 地點
                 if (memo.location.isNotBlank()) {
                     Text(
                         "地點：${memo.location}",
-                        color = MaterialTheme.colorScheme.primary,
+                        color = locationColor,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.clickable { onOpenLocation() }
                     )
