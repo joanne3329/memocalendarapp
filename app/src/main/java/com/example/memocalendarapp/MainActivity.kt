@@ -22,10 +22,20 @@ import com.example.memocalendarapp.viewmodel.MemoViewModelFactory
 import com.example.memocalendarapp.ui.MainScreen
 import com.example.memocalendarapp.ui.AddMemoScreen
 import com.example.memocalendarapp.ui.theme.MemoAppTheme
+//import androidx.core.app.NotificationCompat
+//import androidx.core.app.NotificationManagerCompat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        // 測試直接發通知
+//        val builder = NotificationCompat.Builder(this, "memo_reminder")
+//            .setSmallIcon(R.drawable.ic_launcher_foreground)
+//            .setContentTitle("測試通知")
+//            .setContentText("這是測試內容")
+//            .setPriority(NotificationCompat.PRIORITY_HIGH)
+//            .setAutoCancel(true)
+//        NotificationManagerCompat.from(this).notify(9999, builder.build())
 
         // ===== 建立通知頻道 =====
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

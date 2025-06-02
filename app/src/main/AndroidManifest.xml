@@ -27,6 +27,10 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name="com.example.memocalendarapp.util.MemoReminderReceiver"
+            android:exported="false" />
+
     </application>
 
 </manifest>
