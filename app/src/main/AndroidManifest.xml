@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 加在這裡！ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -30,7 +29,6 @@
         <receiver
             android:name="com.example.memocalendarapp.util.MemoReminderReceiver"
             android:exported="false" />
-
     </application>
 
 </manifest>
