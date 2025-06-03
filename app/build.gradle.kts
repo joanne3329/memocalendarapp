@@ -40,7 +40,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8" // 依你 compose 版本調整
+        kotlinCompilerExtensionVersion = "1.6.4"
     }
 }
 

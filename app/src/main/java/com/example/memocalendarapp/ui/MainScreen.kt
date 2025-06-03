@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.memocalendarapp.data.Memo
 import com.example.memocalendarapp.viewmodel.MemoViewModel
@@ -25,26 +26,25 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding(),
-        // ====== 只改顏色 ↓ ======
         topBar = {
             TopAppBar(
                 title = { Text("今日備忘錄 ${viewModel.getToday()}") },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFD1CFE2),   // 柔和紫色
-                    titleContentColor = Color(0xFF1F5673) // 深藍字
+                    containerColor = Color(0xFFD1CFE2),
+                    titleContentColor = Color(0xFF1F5673)
                 )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddMemo,
-                containerColor = Color(0xFF1F5673),    // 深藍底
-                contentColor = Color.White             // 白色字
+                containerColor = Color(0xFF1F5673),
+                contentColor = Color.White,
+                modifier = Modifier.testTag("FAB_ADD_MEMO")  // ★ 為測試加的
             ) {
                 Text("+")
             }
         }
-        // ====== ↑ 只改顏色 ======
     ) { padding ->
         Column(
             Modifier
@@ -58,7 +58,7 @@ fun MainScreen(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(24.dp),
-                    color = Color(0xFF6C7A89) // 灰藍提醒
+                    color = Color(0xFF6C7A89)
                 )
             } else {
                 LazyColumn {
@@ -72,15 +72,12 @@ fun MainScreen(
                     }
                 }
             }
-            // 刪除確認 Dialog
-            // ...前面略...
             if (showDeleteDialog.first && showDeleteDialog.second != null) {
                 AlertDialog(
                     onDismissRequest = { showDeleteDialog = false to null },
-                    containerColor = Color(0xFFD1CFE2), // 柔和紫
-                    title = { Text("確認刪除", color = Color(0xFF1F5673)) }, // 深藍標題
+                    containerColor = Color(0xFFD1CFE2),
+                    title = { Text("確認刪除", color = Color(0xFF1F5673)) },
                     text = { Text("確定要刪除此備忘錄嗎？", color = Color.Black) },
-                    // 刪除（右邊）
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -90,7 +87,6 @@ fun MainScreen(
                             colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF1F5673))
                         ) { Text("刪除") }
                     },
-                    // 取消（左邊）
                     dismissButton = {
                         TextButton(
                             onClick = { showDeleteDialog = false to null },
